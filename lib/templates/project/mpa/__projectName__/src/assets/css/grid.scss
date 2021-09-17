@@ -1,0 +1,18 @@
+.g-side,
+.g-section,
+.g-section-full {
+    background: #fff;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, .08);
+    border-radius: 2px;
+}
+
+.g-section {
+    padding: 20px;
+    margin-bottom: 20px;
+    &-in {
+        padding: 30px 50px;
+    }
+    &-full{
+        padding: 20px;
+    }
+}

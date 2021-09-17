@@ -1,0 +1,65 @@
+{
+  "id": "2787355",
+  "name": "health",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "959805",
+      "name": "bi",
+      "font_class": "bi",
+      "unicode": "e66d",
+      "unicode_decimal": 58989
+    },
+    {
+      "icon_id": "4889667",
+      "name": "交易",
+      "font_class": "jiaoyi",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "5961321",
+      "name": "AI",
+      "font_class": "wuguan",
+      "unicode": "ec5f",
+      "unicode_decimal": 60511
+    },
+    {
+      "icon_id": "6677529",
+      "name": "数据处理",
+      "font_class": "shujuchuli",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "13486689",
+      "name": "科研3",
+      "font_class": "keyan",
+      "unicode": "e77c",
+      "unicode_decimal": 59260
+    },
+    {
+      "icon_id": "15922144",
+      "name": "AI",
+      "font_class": "AI",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "18165359",
+      "name": "药品,药物,违禁品,违禁药物",
+      "font_class": "drug-full",
+      "unicode": "e88a",
+      "unicode_decimal": 59530
+    },
+    {
+      "icon_id": "18624346",
+      "name": "全景",
+      "font_class": "quanjing",
+      "unicode": "e6c9",
+      "unicode_decimal": 59081
+    }
+  ]
+}

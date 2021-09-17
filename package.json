@@ -1,0 +1,35 @@
+{
+  "name": "project-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "project-cli": "bin/index.js"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FridaS/project-cli.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FridaS/project-cli/issues"
+  },
+  "homepage": "https://github.com/FridaS/project-cli#readme",
+  "dependencies": {
+    "async": "^3.2.1",
+    "chalk": "^4.1.2",
+    "commander": "^8.2.0",
+    "consolidate": "^0.16.0",
+    "fs": "^0.0.1-security",
+    "inquirer": "^8.1.2",
+    "metalsmith": "^2.3.0",
+    "path": "^0.12.7"
+  }
+}
