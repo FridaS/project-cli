@@ -5,4 +5,4 @@
 3. `health-cli project myProject spa` 创建名为 myProject 的单页应用前端工程
 4. `health-cli project myProject mpa` 创建名为 myProject 的多页应用前端工程
 5. `health-cli project myProject` 创建名为 myProject 的单页应用前端工程
-6. `health-cli childModule myModule` 创建名为 childModule 的子模块
+6. `health-cli module myModule` 创建名为 childModule 的子模块
