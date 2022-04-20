@@ -1,6 +1,10 @@
-module.exports = function handleFileName() {
-  return function(files, metalsmith, done) {
-    const { name } = metalsmith.metadata();
+import Metalsmith, { Callback, Files } from 'metalsmith';
+
+type CustomMetadata = () => { name: string; createType: 'project' | 'module'; };
+
+export default function handleFileName() {
+  return function(files: Files, metalsmith: Metalsmith, done: Callback) {
+    const { name } = (metalsmith.metadata as CustomMetadata)();
     Object.keys(files).forEach(filename => {
       let newFilename = filename;
       if (/[_.]_projectName__/.test(filename)) {
@@ -14,6 +18,6 @@ module.exports = function handleFileName() {
         delete files[filename];
       }
     });
-    done();
+    done(null, files, metalsmith);
   };
-};
+}
