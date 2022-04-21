@@ -1,44 +1,54 @@
 <template>
-    <div class="resetPassword">
-        <account-form ref="accountForm" :isResetPwd="true">
-            <el-button slot="operations" type="primary" class="resetPassword-btn" @click="reset">重置密码</el-button>
-        </account-form>
-    </div>
+  <div class="resetPassword">
+    <AccountForm
+      ref="accountForm"
+      :is-reset-pwd="true"
+    >
+      <el-button
+        slot="operations"
+        type="primary"
+        class="resetPassword-btn"
+        @click="reset"
+      >
+        重置密码
+      </el-button>
+    </AccountForm>
+  </div>
 </template>
 
 <script>
-import AccountForm from './accountForm'
-import api from '@/api'
+import AccountForm from './accountForm';
+import api from '@/api';
 
 export default {
-    name: 'resetPassword',
-    components: { AccountForm },
-    data() {
-        return {
+  name: 'ResetPassword',
+  components: { AccountForm },
+  data() {
+    return {
             
-        }
+    };
+  },
+  methods: {
+    async reset() {
+      await this.$refs.accountForm.$validate();
+      const formData = this.$refs.accountForm.$getFormData();
+      let { email, emailCode, passWord } = formData;
+      api.resetPwd({
+        email, 
+        verificationCode: emailCode, 
+        newPassword: passWord,
+      }).then(() => {
+        this.$confirm('密码修改成功，请重新登录！', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'success',
+        }).then(() => { 
+          this.$router.push({ path: '/' }); 
+        }).catch(() => {});
+      });
     },
-    methods: {
-        async reset() {
-            await this.$refs.accountForm.$validate();
-            const formData = this.$refs.accountForm.$getFormData();
-            let { email, emailCode, passWord } = formData;
-            api.resetPwd({
-                email, 
-                verificationCode: emailCode, 
-                newPassword: passWord
-            }).then(() => {
-                this.$confirm('密码修改成功，请重新登录！', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'success'
-                }).then(() => { 
-                    this.$router.push({ path: '/' }); 
-                }).catch(() => {})
-            })
-        }
-    }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
