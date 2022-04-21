@@ -2,6 +2,6 @@
 
 > 第一次提交前
 > 1. git init
-> 2. husky install
+> 2. npx husky install
 
 npm run commit
