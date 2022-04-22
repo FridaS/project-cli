@@ -1,6 +1,6 @@
 {
   "name": "health-cli",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -32,12 +32,18 @@
     "handlebars": "^4.7.7",
     "inquirer": "^8.1.2",
     "metalsmith": "^2.3.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "typescript": "^4.6.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
+    "@types/async": "^3.2.12",
+    "@types/consolidate": "^0.14.1",
+    "@types/metalsmith": "^2.3.1",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
     "cz-customizable": "^6.3.0",
     "eslint": "^8.13.0",
     "eslint-plugin-vue": "^8.6.0",

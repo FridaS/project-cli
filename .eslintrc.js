@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['eslint:recommended', 'plugin:vue/recommended'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:vue/recommended'],
   rules: {
     semi: ['error', 'always'],
     quotes: ['error', 'single'],
@@ -26,7 +26,11 @@ module.exports = {
   },
   parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: '@babel/eslint-parser',
+    parser: {
+      js: '@babel/eslint-parser',
+      ts: '@typescript-eslint/parser',
+      "<template>": 'espree',
+    },
     sourceType: 'module',
     ecmaVersion: 2020,
     requireConfigFile: false,
