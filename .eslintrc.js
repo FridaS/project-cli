@@ -6,6 +6,8 @@ module.exports = {
     eqeqeq: [0],
     curly: 'error',
     indent: ['error', 2],
+    'max-len': ['warn', { 'code': 80 }],
+    'operator-linebreak': ['error', 'before'],
     'no-console': 1,
     'max-depth': ['error', 3],
     'consistent-this': ['error', 'self'],

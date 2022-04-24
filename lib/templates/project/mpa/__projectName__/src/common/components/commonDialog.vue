@@ -1,29 +1,39 @@
 <template>
-    <el-dialog
-        :title="options.title || '提示'"
-        :class="`m-dialog ${options.type || ''} ` + (options.clazz || '')"
-        :show-close="options.showClose"
-        append-to-body
-        :top="top"
-        :close-on-click-modal="closeOnClickModal"
-        :visible.sync="dialogVisible"
-        :before-close="beforeClose">
-        <i class="sqfont icn-exclamation-solid" v-if="options.type === 'warning'"></i>
-        <slot name="content"></slot>
-        <span slot="footer" class="dialog-footer" v-if="options.buttons">
-            <el-button
-                :class="'u-cancelbtn'"
-                @click="onCancel"
-                v-if="!!options.buttons[1]"
-                :disabled="options.buttonsDisabled && options.buttonsDisabled[1]">{{options.buttons[1]}}</el-button>
-            <el-button
-                :class="'u-okbtn'"
-                @click="onConfirm"
-                v-if="!!options.buttons[0]"
-                :loading="isLoading"
-                :disabled="options.buttonsDisabled && options.buttonsDisabled[0]">{{options.buttons[0]}}</el-button>
-        </span>
-    </el-dialog>
+  <el-dialog
+    :title="options.title || '提示'"
+    :class="`m-dialog ${options.type || ''} ` + (options.clazz || '')"
+    :show-close="options.showClose"
+    append-to-body
+    :top="top"
+    :close-on-click-modal="closeOnClickModal"
+    :visible.sync="dialogVisible"
+    :before-close="beforeClose"
+  >
+    <i
+      v-if="options.type === 'warning'"
+      class="sqfont icn-exclamation-solid"
+    />
+    <slot name="content" />
+    <span
+      v-if="options.buttons"
+      slot="footer"
+      class="dialog-footer"
+    >
+      <el-button
+        v-if="!!options.buttons[1]"
+        :class="'u-cancelbtn'"
+        :disabled="options.buttonsDisabled && options.buttonsDisabled[1]"
+        @click="onCancel"
+      >{{ options.buttons[1] }}</el-button>
+      <el-button
+        v-if="!!options.buttons[0]"
+        :class="'u-okbtn'"
+        :loading="isLoading"
+        :disabled="options.buttonsDisabled && options.buttonsDisabled[0]"
+        @click="onConfirm"
+      >{{ options.buttons[0] }}</el-button>
+    </span>
+  </el-dialog>
 </template>
 
 <script>
@@ -41,53 +51,53 @@
  * @event beforeClose 点击弹窗右上角“x”关闭弹窗之前抛出的事件
  */
 export default {
-    name: 'common-dialog',
-    props: {
-        options: {
-            type: Object,
-            default() {
-                return {
-                    title: '提示',
-                    clazz: '',
-                    showClose: true,
-                    buttons: ['确定', '取消']
-                };
-            }
-        },
-        isLoading: {
-            type: Boolean,
-            default: false
-        }
-    },
-    data() {
+  name: 'CommonDialog',
+  props: {
+    options: {
+      type: Object,
+      default() {
         return {
-            dialogVisible: false,
-            closeOnClickModal: false,
-            top: '10%'
+          title: '提示',
+          clazz: '',
+          showClose: true,
+          buttons: ['确定', '取消'],
         };
+      },
     },
-    methods: {
-        onCancel() {
-            this.$emit('oncancel');
-            this.$close();
-        },
-        onConfirm() {
-            this.$emit('onconfirm');
-        },
-        $show(callParams) {
-            this.dialogVisible = true;
-        },
-        $close() {
-            this.dialogVisible = false;
-        },
-        beforeClose() {
-            this.$emit('beforeClose');
-            if (this.options.beforeCloseNoClose) {
-                return;
-            }
-            this.$close();
-        }
-    }
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      dialogVisible: false,
+      closeOnClickModal: false,
+      top: '10%',
+    };
+  },
+  methods: {
+    onCancel() {
+      this.$emit('oncancel');
+      this.$close();
+    },
+    onConfirm() {
+      this.$emit('onconfirm');
+    },
+    $show() {
+      this.dialogVisible = true;
+    },
+    $close() {
+      this.dialogVisible = false;
+    },
+    beforeClose() {
+      this.$emit('beforeClose');
+      if (this.options.beforeCloseNoClose) {
+        return;
+      }
+      this.$close();
+    },
+  },
 };
 </script>
 <style lang="scss">

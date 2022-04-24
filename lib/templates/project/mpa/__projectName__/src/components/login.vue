@@ -1,50 +1,86 @@
 <template>
-    <div class="login">
-        <img src="@/assets/logo-blue.png" style="height:60px;">
-		<h1 class="login-title">医疗大数据智能管理软件</h1>
-		<div class="login-box">
-			<el-form ref="form">
-				<el-form-item>
-					<el-input type="text"
-						v-model="loginForm.username"
-						placeholder="请输入手机号码"
-						@keyup.enter.native="handleLogin"
-						clearable>
-						<template slot="prepend"> <i class="login-icon el-icon-user"></i></template>
-					</el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-input type="password"
-						v-model="loginForm.password"
-						placeholder="请输入密码"
-						show-password
-						clearable
-						@keyup.enter.native="handleLogin">
-						<template slot="prepend"> <i class="login-icon el-icon-key"></i></template>
-					</el-input>
-				</el-form-item>
-			</el-form>
-			<div class="login-btns">
-				<el-button class="login-btns-login" type="primary" @click="handleLogin()">登录</el-button>
-				<div>
-					<el-button type="text" 
-						class="login-btns-registry" 
-						@click="$router.push({path: '/registry'})">注册账号</el-button>
-					<el-button type="text"
-						class="login-btns-pwd"
-						@click="$router.push({path:'/resetPassword'})">忘记密码？</el-button>
-				</div>
-			</div>
-			<div class='login-tips' v-show="loginErr">{{loginErrTips}}</div>
-		</div>
-		<el-tooltip 
-			style="position:absolute;bottom:20px;left:10px"
-			popper-class="thistooltip"
-			content="84：开发（dev）版；82：稳定展示版；86：稳定使用版"
-			placement="right">
-			<i style="color:dimgray;" class="el-icon-info"></i>
-		</el-tooltip>
+  <div class="login">
+    <img
+      src="@/assets/logo-blue.png"
+      style="height:60px;"
+    >
+    <h1 class="login-title">
+      医疗大数据智能管理软件
+    </h1>
+    <div class="login-box">
+      <el-form ref="form">
+        <el-form-item>
+          <el-input
+            v-model="loginForm.username"
+            type="text"
+            placeholder="请输入手机号码"
+            clearable
+            @keyup.enter.native="handleLogin"
+          >
+            <template slot="prepend">
+              <i class="login-icon el-icon-user" />
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-input
+            v-model="loginForm.password"
+            type="password"
+            placeholder="请输入密码"
+            show-password
+            clearable
+            @keyup.enter.native="handleLogin"
+          >
+            <template slot="prepend">
+              <i class="login-icon el-icon-key" />
+            </template>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div class="login-btns">
+        <el-button
+          class="login-btns-login"
+          type="primary"
+          @click="handleLogin()"
+        >
+          登录
+        </el-button>
+        <div>
+          <el-button
+            type="text" 
+            class="login-btns-registry" 
+            @click="$router.push({path: '/registry'})"
+          >
+            注册账号
+          </el-button>
+          <el-button
+            type="text"
+            class="login-btns-pwd"
+            @click="$router.push({path:'/resetPassword'})"
+          >
+            忘记密码？
+          </el-button>
+        </div>
+      </div>
+      <div
+        v-show="loginErr"
+        class="login-tips"
+      >
+        {{ loginErrTips }}
+      </div>
     </div>
+    <el-tooltip 
+      style="position:absolute;bottom:20px;left:10px"
+      popper-class="thistooltip"
+      content="84：开发（dev）版；82：稳定展示版；86：稳定使用版"
+      placement="right"
+    >
+      <i
+        style="color:dimgray;"
+        class="el-icon-info"
+      />
+    </el-tooltip>
+  </div>
 </template>
 
 <script>
@@ -52,51 +88,51 @@ import api from '@/api';
 import { getUrlParams } from '@common/utils/util';
 
 export default {
-    name: 'login',
-	data() {
-		return {
-			loginForm: {
-				username: '',
-				password: '',
-			},
-			loginErr: false,
-			loginErrTips: ''
-		}
-	},
-	methods: {
-		handleLogin() {
-			this.loginErr = false;
-			const { username, password } = this.loginForm;
-			// 手机号有效性判断
-			var phoneReg = /^1[34578]\d{9}$/.test(username)
-			if (!phoneReg) {
-				this.loginErr = true;
-				this.loginErrTips = "请输入正确的手机号";
-				return;
-			}
-			if (password.length < 6) {
-				this.loginErr = true;
-				this.loginErrTips = "密码不能小于6位";
-				return;
-			}
-			api.login({ username, password }).then(() => {
-				this.loginErr = false;
-				this.getUserInfo();
-			});
-		},
-		getUserInfo() {
-			api.getUserInfo().then(res => {
-				window.localStorage.setItem('organizationCode', res.organizationCode)
-				window.localStorage.setItem('name', res.name)
+  name: 'Login',
+  data() {
+    return {
+      loginForm: {
+        username: '',
+        password: '',
+      },
+      loginErr: false,
+      loginErrTips: '',
+    };
+  },
+  methods: {
+    handleLogin() {
+      this.loginErr = false;
+      const { username, password } = this.loginForm;
+      // 手机号有效性判断
+      var phoneReg = /^1[34578]\d{9}$/.test(username);
+      if (!phoneReg) {
+        this.loginErr = true;
+        this.loginErrTips = '请输入正确的手机号';
+        return;
+      }
+      if (password.length < 6) {
+        this.loginErr = true;
+        this.loginErrTips = '密码不能小于6位';
+        return;
+      }
+      api.login({ username, password }).then(() => {
+        this.loginErr = false;
+        this.getUserInfo();
+      });
+    },
+    getUserInfo() {
+      api.getUserInfo().then(res => {
+        window.localStorage.setItem('organizationCode', res.organizationCode);
+        window.localStorage.setItem('name', res.name);
 
-				let redirectUrl = getUrlParams(location.href, 'redirect') || '/'
-				console.log('login success, ready to jump')
-				redirectUrl = decodeURIComponent(redirectUrl);
-				window.location.href = redirectUrl;
-			});
-		}
-	}
-}
+        let redirectUrl = getUrlParams(location.href, 'redirect') || '/';
+        console.log('login success, ready to jump');
+        redirectUrl = decodeURIComponent(redirectUrl);
+        window.location.href = redirectUrl;
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -157,7 +193,7 @@ export default {
 		bottom: 95px;
 	}
 }
-.login /deep/ {
+.login ::v-deep {
 	.el-input-group__prepend{
 		background: white;
 		padding: 0 10px;
