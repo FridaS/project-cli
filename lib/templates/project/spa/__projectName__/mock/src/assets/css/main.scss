@@ -1,0 +1,79 @@
+@import "./var.scss";
+body,
+html {
+  height: 100%;
+}
+
+body {
+  background: #f0f2f5;
+  font-family: "HiraginoSansGB-W3, Arial, sans-serif, PingFangSC-Regular";
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 带颜色的icon
+.el-icon-primary {
+  color: $color-primary;
+}
+.el-icon-danger {
+  color: $color-danger;
+}
+.el-icon-success {
+  color: $color-success;
+}
+
+// 文本溢出样式
+.f-toe {
+  overflow: hidden;
+  word-wrap: normal;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* stylelint-disable */
+.f-toe2 {
+  /* autoprefixer: ignore next */
+  display: box;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.f-toe3 {
+  /* autoprefixer: ignore next */
+  display: box;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// 左右浮动
+.f-lt {
+  float: left;
+}
+.f-rt {
+  float: right;
+}
+
+/* 滚动条定制 */
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: #f5f5f5;
+  position: absolute;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #999;
+  border-radius: 8px;
+}
