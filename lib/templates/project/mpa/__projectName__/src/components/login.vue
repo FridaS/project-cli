@@ -83,56 +83,62 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref } from '@vue/composition-api';
 import api from '@/api';
 import { getUrlParams } from '@common/utils/util';
 
-export default {
+export default defineComponent({
   name: 'Login',
-  data() {
-    return {
-      loginForm: {
-        username: '',
-        password: '',
-      },
-      loginErr: false,
-      loginErrTips: '',
-    };
-  },
-  methods: {
-    handleLogin() {
-      this.loginErr = false;
-      const { username, password } = this.loginForm;
+  setup() {
+    const loginForm = ref({
+      username: '',
+      password: '',
+    });
+    const loginErr = ref(false);
+    const loginErrTips = ref('');
+
+    async function handleLogin() {
+      loginErr.value = false;
+      const { username, password } = loginForm.value;
+
       // 手机号有效性判断
       var phoneReg = /^1[34578]\d{9}$/.test(username);
       if (!phoneReg) {
-        this.loginErr = true;
-        this.loginErrTips = '请输入正确的手机号';
+        loginErr.value = true;
+        loginErrTips.value = '请输入正确的手机号';
         return;
       }
       if (password.length < 6) {
-        this.loginErr = true;
-        this.loginErrTips = '密码不能小于6位';
+        loginErr.value = true;
+        loginErrTips.value = '密码不能小于6位';
         return;
       }
-      api.login({ username, password }).then(() => {
-        this.loginErr = false;
-        this.getUserInfo();
-      });
-    },
-    getUserInfo() {
-      api.getUserInfo().then(res => {
-        window.localStorage.setItem('organizationCode', res.organizationCode);
-        window.localStorage.setItem('name', res.name);
+      await api.login({ username, password });
+      loginErr.value = false;
+      getUserInfo();
+    }
 
-        let redirectUrl = getUrlParams(location.href, 'redirect') || '/';
-        console.log('login success, ready to jump');
-        redirectUrl = decodeURIComponent(redirectUrl);
-        window.location.href = redirectUrl;
-      });
-    },
+    async function getUserInfo() {
+      const { data: { organizationCode, name } } = await api.getUserInfo();
+      window.localStorage.setItem('organizationCode', String(organizationCode));
+      window.localStorage.setItem('name', name);
+
+      let redirectUrl = getUrlParams(location.href, 'redirect') || '/';
+      // console.log('login success, ready to jump');
+      redirectUrl = decodeURIComponent(redirectUrl);
+      window.location.href = redirectUrl;
+    }
+
+    return {
+      loginForm,
+      loginErr,
+      loginErrTips,
+      handleLogin,
+      getUserInfo,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -193,7 +199,7 @@ export default {
 		bottom: 95px;
 	}
 }
-.login /deep/ {
+.login ::v-deep {
 	.el-input-group__prepend{
 		background: white;
 		padding: 0 10px;

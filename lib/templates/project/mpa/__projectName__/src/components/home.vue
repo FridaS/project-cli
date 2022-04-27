@@ -5,19 +5,18 @@
   </div>
 </template>
 
-<script>
-import HeaderMenu from '@common/components/headerMenu';
-import Platforms from './platforms';
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api';
+import HeaderMenu from '@common/components/headerMenu.vue';
+import Platforms from './platforms.vue';
 
-export default {
+export default defineComponent({
   name: 'Home',
   components: { HeaderMenu, Platforms },
-  data() {
-    return {
+  setup() {
 
-    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

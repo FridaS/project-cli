@@ -17,52 +17,50 @@
   </ul>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, reactive } from '@vue/composition-api';
+export default defineComponent({
   name: 'Platforms',
-  data() {
+  setup() {
+    const platforms = reactive([{
+      name: '数据生产平台',
+      entry: '/data',
+      icon: 'icon-shujuchuli',
+    }, {
+      name: '患者信息全景可视化软件',
+      entry: '/patients',
+      icon: 'icon-quanjing',
+    }, {
+      name: '实时BI分析',
+      entry: '/',
+      icon: 'icon-bi',
+    }, {
+      name: '药物评价工具',
+      entry: '/',
+      icon: 'icon-drug-full',
+    }, {
+      name: '数据交易平台',
+      entry: '/',
+      icon: 'icon-jiaoyi',
+    }, {
+      name: '一站式科研平台',
+      entry: '/',
+      icon: 'icon-keyan',
+    }, {
+      name: 'AI开放平台',
+      entry: '/',
+      icon: 'icon-wuguan',
+    }, {
+      name: 'AI中台',
+      entry: '/',
+      icon: 'icon-AI',
+    }]);
+
     return {
-      platforms: [{
-        name: '数据生产平台',
-        entry: '/data',
-        icon: 'icon-shujuchuli',
-      }, {
-        name: '患者信息全景可视化软件',
-        entry: '/patients',
-        icon: 'icon-quanjing',
-      }, {
-        name: '实时BI分析',
-        entry: '/',
-        icon: 'icon-bi',
-      }, {
-        name: '药物评价工具',
-        entry: '/',
-        icon: 'icon-drug-full',
-      }, {
-        name: '数据交易平台',
-        entry: '/',
-        icon: 'icon-jiaoyi',
-      }, {
-        name: '一站式科研平台',
-        entry: '/',
-        icon: 'icon-keyan',
-      }, {
-        name: 'AI开放平台',
-        entry: '/',
-        icon: 'icon-wuguan',
-      }, {
-        name: 'AI中台',
-        entry: '/',
-        icon: 'icon-AI',
-      }],
+      platforms,
     };
   },
-  methods: {
-    // handlerHover(type) {
-    //     console.log(type)
-    // }
-  },
-};
+});
 </script>
 
 <style lang="scss" scoped>

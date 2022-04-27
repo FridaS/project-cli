@@ -1,21 +1,23 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, Canceler } from 'axios';
 import Cookies from 'js-cookie';
 import { Message } from 'element-ui';
-import { getUrlParams, typeOf } from '@/utils/util';
+import { getUrlParams, typeOf } from '@/common/utils/util';
 
 axios.defaults.timeout = 50000;
 // 请求失败重试次数
-axios.defaults.retry = 1;
-axios.defaults.retryDelay = 1000;
+// axios.defaults.retry = 1;
+// axios.defaults.retryDelay = 1000;
 
-const pending = []; // 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
+// 声明一个数组用于存储每个ajax请求的取消函数和ajax标识
+const pending : { u: string, f: Canceler }[] = []; 
 const CancelToken = axios.CancelToken;
-const removePending = (config) => {
+const removePending = (config: AxiosRequestConfig) => {
   const paramsStr = JSON.stringify(config.params);
   for (const p in pending) {
-    if (pending[p].u === `${config.url}&${config.method}&${paramsStr}`) { // 当当前请求在数组中存在时执行函数体
+    // 当当前请求在数组中存在时执行函数体
+    if (pending[p].u === `${config.url}&${config.method}&${paramsStr}`) { 
       pending[p].f(); // 执行取消操作
-      pending.splice(p, 1); // 把这条记录从数组中移除
+      pending.splice(Number(p), 1); // 把这条记录从数组中移除
     }
   }
 };
@@ -25,7 +27,8 @@ axios.interceptors.request.use(
   (config) => {
     removePending(config); // 在下一ajax发送前执行一下取消操作
 
-    const paramsStr = JSON.stringify(config.params) || JSON.stringify(config.data);
+    const paramsStr = JSON.stringify(config.params) 
+      || JSON.stringify(config.data);
     config.cancelToken = new CancelToken((c) => {
       pending.push({ u: `${config.url}&${config.method}&${paramsStr}`, f: c });
     });
@@ -39,25 +42,23 @@ axios.interceptors.request.use(
 const STATUS_TIPS_TEXT_MAP = {
   500: '服务器错误，请稍后再试',
   504: '请求超时',
-};
-
-const loginUrl = '/#/login?redirect=';
-
-const handleUnauthorized = () => {
-  const redirect = getUrlParams(location.href, 'redirect');
-  if (redirect) {
-    return null;
-  }
-  const currentUrl = encodeURIComponent(location.href);
-  const toUrl = redirect ? currentUrl : loginUrl + currentUrl;
-  location.replace(toUrl);
-};
+} as const;
 
 // http response 拦截器
 axios.interceptors.response.use(
-  (response = {}) => {
+  (response: AxiosResponse<any>) => {
     const data = response.data;
-    if ((response.config.params && response.config.params.originData) || (response.config.data && (typeOf(response.config.data) === 'string' || typeOf(response.config.data) === 'array') && response.config.data.indexOf('originData') > -1)) {
+    if (
+      response.config.params?.originData
+      || (
+        response.config.data 
+        && (
+          typeOf(response.config.data) === 'string' 
+          || typeOf(response.config.data) === 'array'
+        ) 
+        && response.config.data.indexOf('originData') > -1
+      )
+    ) {
       return data;
     }
 
@@ -70,11 +71,11 @@ axios.interceptors.response.use(
         data: data.data,
       });
     }
-    if (data.code == 401) {
+    if (Number(data.code) === 401) {
       handleUnauthorized();
       return null;
     }
-    if (data.code == 403) {
+    if (Number(data.code) === 403) {
       Message.error('没有权限');
       location.replace('/403');
       return Promise.reject({
@@ -83,8 +84,8 @@ axios.interceptors.response.use(
       });
     }
     // 服务器超时
-    if (data.code == 500 || data.code == 504) {
-      Message.error(STATUS_TIPS_TEXT_MAP[data.code] || '服务器链接错误');
+    if (Number(data.code) === 500 || Number(data.code) === 504) {
+      Message.error(STATUS_TIPS_TEXT_MAP[data.code as 500 | 504]);
       return Promise.reject({
         code: data.code,
         msg: data.msg,
@@ -95,15 +96,15 @@ axios.interceptors.response.use(
   }, (error) => {
     if (error.response) {
       const status = error.response.status;
-      if (status == 401) {
+      if (Number(status) === 401) {
         handleUnauthorized();
-      } else if (status == 403) {
+      } else if (Number(status) === 403) {
         return Promise.reject({
           code: 403,
           msg: '没有权限',
         });
       } else {
-        Message.error(STATUS_TIPS_TEXT_MAP[status] || '请求失败');
+        Message.error(STATUS_TIPS_TEXT_MAP[status as 500 | 504] || '请求失败');
       }
     }
     return Promise.reject(error);
@@ -111,3 +112,15 @@ axios.interceptors.response.use(
 );
 
 export default axios;
+
+const loginUrl = '/#/login?redirect=';
+function handleUnauthorized() {
+  const redirect = getUrlParams(location.href, 'redirect');
+  if (redirect) {
+    return null;
+  }
+  const currentUrl = encodeURIComponent(location.href);
+  const toUrl = redirect ? currentUrl : loginUrl + currentUrl;
+  location.replace(toUrl);
+}
+

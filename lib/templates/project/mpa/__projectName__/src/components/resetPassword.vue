@@ -16,39 +16,40 @@
   </div>
 </template>
 
-<script>
-import AccountForm from './accountForm';
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api';
+import AccountForm from './accountForm.vue';
 import api from '@/api';
+import { AccountFormInst } from '@/common/types';
 
-export default {
+export default defineComponent({
   name: 'ResetPassword',
   components: { AccountForm },
-  data() {
-    return {
-            
-    };
-  },
-  methods: {
-    async reset() {
-      await this.$refs.accountForm.$validate();
-      const formData = this.$refs.accountForm.$getFormData();
-      let { email, emailCode, passWord } = formData;
-      api.resetPwd({
+  setup(_, context) {
+    async function reset() {
+      const refs = context.refs;
+      const { $confirm, $router } = context.root;
+
+      await (refs.accountForm as AccountFormInst).$validate();
+      const formData = (refs.accountForm as AccountFormInst).$getFormData();
+      const { email, emailCode, passWord } = formData;
+      await api.resetPwd({
         email, 
         verificationCode: emailCode, 
         newPassword: passWord,
-      }).then(() => {
-        this.$confirm('密码修改成功，请重新登录！', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'success',
-        }).then(() => { 
-          this.$router.push({ path: '/' }); 
-        }).catch(() => {});
       });
-    },
+      await $confirm('密码修改成功，请重新登录！', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success',
+      });
+      await $router.push({ path: '/' }); 
+    }
+    return {
+      reset,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

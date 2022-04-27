@@ -165,179 +165,202 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent, onMounted, ref, watch } from '@vue/composition-api';
 import api from '@/api';
 import { validatePassword } from '@/common/utils/util';
-import DrawVerifyCode from '@components/drawVerifyCode';
+import DrawVerifyCode from '@components/drawVerifyCode.vue';
+import { ElForm } from 'element-ui/types/form';
+import { Department, Organization, ValidatorCB } from '@/common/types';
 
-export default {
+export default defineComponent({
   name: 'AccountForm',
   components: { DrawVerifyCode },
-  props: ['isResetPwd'], // isResetPwd === true: 忘记密码页面；否则：注册账号页面
-  data() {
-    let verifyCodeValidator = (rule, value, cb) => {
-      if (value.trim() !== this.verifyCode) { 
+  props: {
+    isResetPwd: { type: Boolean, default: false},
+  },
+  setup(props, { refs }) {    
+    const formData = ref({
+      name: '',
+      organization: {} as Organization | {}, // 包括name和organizationCode
+      department: {} as Department | {}, // 包括NAME和DEPARTMENTCODE
+      phone: '',
+      email: '',
+      emailCode: '',
+      passWord: '',
+      verifyCode: '',
+      checkPassWord: '',
+    });
+    const verifyCode = ref(''); // 图形验证码
+    const buttoncotent = ref('发送验证码');//邮箱验证码发送按钮
+    const totalTime = ref(60);//倒计时时间
+    const canClick = ref(true);//按钮是否能够点击
+    const showtip = ref(true);//是否显示密码格式提示
+    const organizations = ref<{ 
+      NAME: string, 
+      ORGANIZATIONCODE: string, 
+    }[]>([]); // 单位
+    const departments = ref<{ 
+      NAME: string, 
+      DEPARTMENTCODE: string, 
+      disable: boolean
+    }[]>([]); // 部门
+
+    const rules = {
+      name: [
+        { required: true, message: '请输入真实姓名', trigger: 'change' },
+      ],
+      organization: [
+        { required: true, message: '请选择单位', trigger: 'change' },
+      ],
+      department: [
+        { required: true, message: '请选择部门', trigger: 'change' },
+      ],
+      phone: [
+        { required: true, message: '请输入手机号码', trigger: 'change' },
+        { pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' },
+      ],
+      email: [
+        { required: true, message: '请输入邮箱地址', trigger: 'change' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
+      ],
+      verifyCode: [
+        { required: true, message: '请输入图形验证码', trigger: 'change' },
+        { validator: verifyCodeValidator, message: '请输入正确的图形验证码', trigger: 'blur' },
+      ],
+      emailCode: [
+        { required: true, message: '请输入邮箱验证码', trigger: 'change' },
+      ],
+      passWord: [
+        { required: true, message: '请输入密码', trigger: 'change' },
+        { validator: passWordValidator, trigger: ['change', 'blur'] },
+      ],
+      checkPassWord: [
+        { required: true, message: '请确认密码', trigger: 'change' },
+        { validator: checkPassWordValidator, trigger: 'blur' },
+      ],
+    };
+    
+    const organizationsResult = computed(() => 
+      organizations.value.map(item => ({
+        name: item.NAME.trim(),
+        organizationCode: item.ORGANIZATIONCODE.trim(),
+      })),
+    );
+
+    onMounted(() => {
+      changeCode();
+      !props.isResetPwd && getOrganizations();
+    });
+    watch(formData.value.organization, () => {
+      formData.value.department = {};
+      getDepartments();
+    });
+
+    function changeCode() {
+      const verifyCodes = '1234567890';
+      verifyCode.value = '';
+      verifyCode.value = randCode(verifyCodes, 4);
+      function randCode(characters: string, length: number) {
+        //length为所需长度，characters为所包含的所有字符，默认为字母+数字。
+        const splitCharacters = characters.split('');//分割字符。
+        let result = '';//返回的结果。 
+        while (result.length < length) {
+          var n = Math.floor(Math.random() * splitCharacters.length + 1) - 1;
+          result += splitCharacters[n];
+        }
+        return result;
+      }
+    }
+    async function getOrganizations() {
+      const { data: { res } } = await api.getOrganizations();
+      organizations.value = res;
+    }
+    async function getDepartments() {
+      const { data: { res } } = await api.getDepartments();
+      departments.value = res;
+    }
+
+    function sendEmail() {
+      if (!canClick.value) {
+        return;
+      }
+      (refs.form as ElForm).validateField('email', async (err) => {
+        if (!err) {
+          await api.sendEmail({
+            email: formData.value.email,
+            checkStatus: 0, // 0 - 无须校验该邮箱是否已注册
+          });
+          canClick.value = false;
+          let time = totalTime.value;//倒计时时间
+          buttoncotent.value = time + 's后重试';
+          let clock = window.setInterval(() => {
+            --time;
+            buttoncotent.value = time + 's后重试';
+            if (time < 0) {
+              window.clearInterval(clock);
+              buttoncotent.value = '发送验证码';
+              time = totalTime.value;
+              canClick.value = true;  //这里重新开启
+            }
+          }, 1000);
+        }
+      });
+    }
+    function $validate() {
+      return (refs.form as ElForm).validate();
+    }
+    function $getFormData() {
+      return formData.value;
+    }
+
+    return {
+      formData,
+      verifyCode,
+      buttoncotent,
+      totalTime,
+      canClick,
+      showtip,
+      organizations,
+      departments,
+      rules,
+      organizationsResult,
+      changeCode,
+      sendEmail,
+      $validate,
+      $getFormData,
+    };
+
+    function verifyCodeValidator(_: unknown, v: string, cb: ValidatorCB) {
+      if (v.trim() !== verifyCode.value) { 
         cb(new Error()); 
       } else { 
         cb(); 
       }
-    };
-    let passWordValidator = (rule, value, cb) => {
-      if (value.indexOf(' ') != -1) {
+    }
+    function passWordValidator(_: unknown, v: string, cb: ValidatorCB) {
+      if (v.indexOf(' ') !== -1) {
         //判断字符串是否有空格
-        this.showtip = true;
+        showtip.value = true;
         cb(new Error('请确认输入密码符合规则'));
-      } else if (!validatePassword(value)) {
-        this.showtip = true;
+      } else if (!validatePassword(v)) {
+        showtip.value = true;
         cb(new Error('请确认输入密码符合规则'));
       } else {
-        this.showtip = false;
+        showtip.value = false;
         cb();
       }
-    };
-    let checkPassWordValidator = (rule, value, cb) => {
-      if (this.formData.passWord != value) { 
+    }
+    function checkPassWordValidator(_: unknown, v: string, cb: ValidatorCB) {
+      if (formData.value.passWord !== v) { 
         cb(new Error('请确认两次输入的密码相同'));
       } else { 
         cb();
       }
-    };
-    return {
-      formData: {
-        name: '',
-        organization: {}, // 包括name和organizationCode
-        department: {}, // 包括NAME和DEPARTMENTCODE
-        phone: '',
-        email: '',
-        emailCode: '',
-        passWord: '',
-        verifyCode: '',
-        checkPassWord: '',
-      },
-      rules: {
-        name: [
-          { required: true, message: '请输入真实姓名', trigger: 'change' },
-        ],
-        organization: [
-          { required: true, message: '请选择单位', trigger: 'change' },
-        ],
-        department: [
-          { required: true, message: '请选择部门', trigger: 'change' },
-        ],
-        phone: [
-          { required: true, message: '请输入手机号码', trigger: 'change' },
-          { pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' },
-        ],
-        email: [
-          { required: true, message: '请输入邮箱地址', trigger: 'change' },
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
-        ],
-        verifyCode: [
-          { required: true, message: '请输入图形验证码', trigger: 'change' },
-          { validator: verifyCodeValidator, message: '请输入正确的图形验证码', trigger: 'blur' },
-        ],
-        emailCode: [
-          { required: true, message: '请输入邮箱验证码', trigger: 'change' },
-        ],
-        passWord: [
-          { required: true, message: '请输入密码', trigger: 'change' },
-          { validator: passWordValidator, trigger: ['change', 'blur'] },
-        ],
-        checkPassWord: [
-          { required: true, message: '请确认密码', trigger: 'change' },
-          { validator: checkPassWordValidator, trigger: 'blur' },
-        ],
-      },
-      verifyCode: '', // 图形验证码
-      buttoncotent: '发送验证码',//邮箱验证码发送按钮
-      totalTime: 60,//倒计时时间
-      canClick: true,//按钮是否能够点击
-      showtip: true,//是否显示密码格式提示
-      organizations: [], // 单位
-      departments: [], // 部门
-    };
+    }
   },
-  computed: {
-    organizationsResult() {
-      return this.organizations.map(item => {
-        return {
-          name: item.NAME.trim(),
-          organizationCode: item.ORGANIZATIONCODE.trim(),
-        };
-      });
-    },
-  },
-  watch: {
-    'formData.organization'() {
-      this.formData.department = {};
-      this.getDepartments();
-    },
-  },
-  mounted() {
-    this.changeCode();
-    !this.isResetPwd && this.getOrganizations();
-  },
-  methods: {
-    changeCode() {
-      function randCode(characters, length) {
-        //length为所需长度，characters为所包含的所有字符，默认为字母+数字。
-        characters = characters.split('');//分割字符。
-        let result = '';//返回的结果。 
-        while (result.length < length) {
-          var n = Math.floor(Math.random() * characters.length + 1) - 1;
-          result += characters[n];
-        }
-        return result;
-      }
-      var verifyCodes = '1234567890';
-      this.verifyCode = '';
-      this.verifyCode = randCode(verifyCodes, 4);
-    },
-    getOrganizations() {
-      api.getOrganizations().then(res => {
-        this.organizations = res;
-      });
-    },
-    getDepartments() {
-      api.getDepartments().then(res => {
-        this.departments = res;
-      });
-    },
-    sendEmail() {
-      if (!this.canClick) {
-        return;
-      }
-      this.$refs.form.validateField('email', (err) => {
-        if (!err) {
-          api.sendEmail({
-            email: this.formData.email,
-            checkStatus: 0, // 0 - 无须校验该邮箱是否已注册
-          }).then(() => {
-            this.canClick = false;
-            let time = this.totalTime;//倒计时时间
-            this.buttoncotent = time + 's后重试';
-            let clock = window.setInterval(() => {
-              --time;
-              this.buttoncotent = time + 's后重试';
-              if (time < 0) {
-                window.clearInterval(clock);
-                this.buttoncotent = '发送验证码';
-                time = this.totalTime;
-                this.canClick = true;  //这里重新开启
-              }
-            }, 1000);
-          });
-        }
-      });
-    },
-    $validate() {
-      return this.$refs.form.validate();
-    },
-    $getFormData() {
-      return this.formData;
-    },
-  },
-};
+  
+});
 </script>
 
 <style lang="scss" scoped>
@@ -349,7 +372,7 @@ export default {
     &-form {
         width: 552px;
         margin: 0 auto;
-        /deep/ .el-input__inner {
+        ::v-deep .el-input__inner {
             width: 457px;
         }
     }
@@ -358,7 +381,7 @@ export default {
         margin-right: -20px;
         margin-top: 14px; 
     }
-    &-email-verify /deep/ {
+    &-email-verify ::v-deep {
         .el-input__inner{
             width: 341px;
             border-right: none;

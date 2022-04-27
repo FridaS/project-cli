@@ -1,7 +1,7 @@
-const Home = () => import('@components/home');
-const Login = () => import('@components/login');
-const Registry = () => import('@components/registry');
-const ResetPassword = () => import('@components/resetPassword');
+const Home = () => import('@components/home.vue');
+const Login = () => import('@components/login.vue');
+const Registry = () => import('@components/registry.vue');
+const ResetPassword = () => import('@components/resetPassword.vue');
 
 const fullRouter = [{
   path: '/',

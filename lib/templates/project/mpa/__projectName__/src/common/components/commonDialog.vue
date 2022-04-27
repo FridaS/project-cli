@@ -36,7 +36,9 @@
   </el-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref, PropType } from '@vue/composition-api';
+import { CommonDialogOptions } from '../types';
 /**
  * @param {Object} options  定制弹窗属性
  *      @param {String} title  标题
@@ -50,55 +52,64 @@
  * @event oncancel 点击'u-cancelbtn'按钮抛出的事件
  * @event beforeClose 点击弹窗右上角“x”关闭弹窗之前抛出的事件
  */
-export default {
+export default defineComponent({
   name: 'CommonDialog',
   props: {
     options: {
-      type: Object,
-      default() {
-        return {
-          title: '提示',
-          clazz: '',
-          showClose: true,
-          buttons: ['确定', '取消'],
-        };
-      },
+      type: Object as PropType<CommonDialogOptions>,
+      default: () => ({
+        title: '提示',
+        clazz: '',
+        type: '',
+        showClose: true,
+        buttons: ['确定', '取消'],
+        buttonsDisabled: [ false, false ],
+      }),
     },
     isLoading: {
       type: Boolean,
       default: false,
     },
   },
-  data() {
-    return {
-      dialogVisible: false,
-      closeOnClickModal: false,
-      top: '10%',
-    };
-  },
-  methods: {
-    onCancel() {
-      this.$emit('oncancel');
-      this.$close();
-    },
-    onConfirm() {
-      this.$emit('onconfirm');
-    },
-    $show() {
-      this.dialogVisible = true;
-    },
-    $close() {
-      this.dialogVisible = false;
-    },
-    beforeClose() {
-      this.$emit('beforeClose');
-      if (this.options.beforeCloseNoClose) {
+  emits: ['oncancel', 'onconfirm', 'beforeclose'],
+  setup(props, { emit }) {
+    const dialogVisible = ref(false);
+    const closeOnClickModal = ref(false);
+    const top = ref('10%');
+
+    function onCancel() {
+      emit('oncancel');
+      $close();
+    }
+    function onConfirm() {
+      emit('onconfirm');
+    }
+    function $show() {
+      dialogVisible.value = true;
+    }
+    function $close() {
+      dialogVisible.value = false;
+    }
+    function beforeClose() {
+      emit('beforeClose');
+      if (props.options.beforeCloseNoClose) {
         return;
       }
-      this.$close();
-    },
+      $close();
+    }
+
+    return {
+      dialogVisible,
+      closeOnClickModal,
+      top,
+      onCancel,
+      onConfirm,
+      $show,
+      $close,
+      beforeClose,
+    };
   },
-};
+});
 </script>
 <style lang="scss">
 @import '@/assets/css/var.scss';

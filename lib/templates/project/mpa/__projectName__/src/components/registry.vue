@@ -13,22 +13,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import md5 from 'md5';
 import api from '@/api';
-import AccountForm from './accountForm';
+import AccountForm from './accountForm.vue';
+import { AccountFormInst, Department, Organization } from '@/common/types';
 
-export default {
+export default defineComponent({
   name: 'Registry',
   components: { AccountForm },
-  data() {
-    return {};
-  },
-  methods: {
-    async signIn() {
-      await this.$refs.accountForm.$validate();
-      const formData = this.$refs.accountForm.$getFormData();
-      let {
+  setup(_, context) {
+    const refs = context.refs;
+    const { $confirm, $router } = context.root;
+    async function signIn() {
+      await (refs.accountForm as AccountFormInst).$validate();
+      const formData = (refs.accountForm as AccountFormInst).$getFormData();
+      const {
         name,
         organization,
         department,
@@ -37,27 +38,31 @@ export default {
         emailCode,
         passWord,
       } = formData;
-      api.register({
+      await api.register({
         name,
-        organization: organization.name,
-        organizationCode: organization.organizationCode,
-        department: department.NAME,
-        departmentCode: department.DEPARTMENTCODE,
+        organization: (organization as Organization).name,
+        organizationCode: (organization as Organization).organizationCode,
+        department: (department as Department).NAME,
+        departmentCode: (department as Department).DEPARTMENTCODE,
         phone,
         email,
         emailCode,
         passWord: md5(passWord),
-      }).then(() => {
-        this.$confirm('注册申请已提交，管理员审核结果将以邮件形式发送，请关注注册邮箱。', {
+      });
+      await $confirm(
+        '注册申请已提交，管理员审核结果将以邮件形式发送，请关注注册邮箱。', 
+        {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-        }).then(() => {
-          this.$router.push({ path: '/login' });
-        }).catch(() => {});
-      });
-    },
+        },
+      );
+      $router.push({ path: '/login' });
+    }
+    return {
+      signIn,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
