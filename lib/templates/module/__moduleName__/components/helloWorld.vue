@@ -1,11 +1,11 @@
 <template>
-    <div>hello world</div>
+  <div>hello world</div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
-    name: 'HelloWorld',
-}
+  name: 'HelloWorld',
+};
 </script>
 
 <style scoped>

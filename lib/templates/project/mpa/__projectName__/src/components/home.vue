@@ -1,23 +1,22 @@
 <template>
-    <div class="home">
-        <header-menu />
-        <platforms />
-    </div>
+  <div class="home">
+    <HeaderMenu />
+    <Platforms />
+  </div>
 </template>
 
-<script>
-import HeaderMenu from '@common/components/headerMenu';
-import Platforms from './platforms'
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api';
+import HeaderMenu from '@common/components/headerMenu.vue';
+import Platforms from './platforms.vue';
 
-export default {
-    name: 'home',
-    components: { HeaderMenu, Platforms },
-    data() {
-        return {
+export default defineComponent({
+  name: 'Home',
+  components: { HeaderMenu, Platforms },
+  setup() {
 
-        }
-    }
-}
+  },
+});
 </script>
 
 <style lang="scss" scoped>
