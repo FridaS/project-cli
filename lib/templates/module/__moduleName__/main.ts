@@ -2,14 +2,19 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import ElementUI from 'element-ui';
+import vueCompositionApi, { createApp, h } from '@vue/composition-api';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@{{{moduleName}}}/assets/css/index.scss';
 
 Vue.config.productionTip = false;
 
-Vue.use(ElementUI);
+Vue.config.productionTip = false;
 
-new Vue({
+Vue.use(ElementUI).use(vueCompositionApi);
+
+const app = createApp({
   router,
-  render: h => h(App),
-}).$mount('#app');
+  render: () => h(App),
+});
+
+app.mount('#app');

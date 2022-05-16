@@ -1,6 +1,6 @@
-const Home = () => import('@{{{moduleName}}}/pages/home');
-const Test = () => import('@{{{moduleName}}}/pages/test');
-const Test2 = () => import('@{{{moduleName}}}/pages/test2');
+const Home = () => import('@{{{moduleName}}}/pages/home.vue');
+const Test = () => import('@{{{moduleName}}}/pages/test.vue');
+const Test2 = () => import('@{{{moduleName}}}/pages/test2,vue');
 
 const fullRouter = [{
   path: '/',

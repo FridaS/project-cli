@@ -2,7 +2,7 @@
   <div>hello world</div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'HelloWorld',
 };
